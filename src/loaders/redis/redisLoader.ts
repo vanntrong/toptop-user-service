@@ -14,7 +14,7 @@ export class RedisLoader {
       store: redisStore,
       host: config.REDIS_HOST,
       port: parseInt(config.REDIS_PORT),
-      // password: config.REDIS_PASSWORD,
+      password: config.REDIS_PASSWORD,
       // ttl: config.REDIS_TTL,
     });
   }

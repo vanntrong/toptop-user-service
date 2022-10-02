@@ -1,3 +1,5 @@
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
 export interface BaseQuery {
   page?: number;
   per_page?: number;
@@ -9,3 +11,11 @@ export interface BaseQuery {
 export type PaginationResult<T> = { totalCount: number; items: T[] };
 
 export type T = any;
+
+export const UserRequest = createParamDecorator(
+  (data: string, ctx: ExecutionContext) => {
+    const { user } = ctx.switchToHttp().getRequest();
+
+    return data ? user?.[data] : user;
+  },
+);

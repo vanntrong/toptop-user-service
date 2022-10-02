@@ -2,10 +2,9 @@ import { toUserResponse } from '@/common/helper/utils.helper';
 import { AppError } from '@/errors/AppError';
 import { Logger } from '@/loaders/logger/loggerLoader';
 import { User, UserFollow } from '@/models';
-import { BaseQuery, T } from '@/types/common';
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
+import { BaseQuery } from '@/types/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './users.dto';
 import { UserErrorMessage } from './users.type';
@@ -42,13 +41,17 @@ export class UsersService {
         .take(query.per_page)
         .getMany();
 
-      this.logger.log(`find all user: ${JSON.stringify(query, filter)}`);
+      this.logger.log(JSON.stringify({ query, filter }), 'FIND ALL USER');
       return {
         totalCount: count,
         items: data.map((user) => toUserResponse(user)),
       };
     } catch (error) {
-      this.logger.error(`find all user:`, error);
+      this.logger.error(
+        error,
+        JSON.stringify({ query, filter }),
+        'FIND ALL USER',
+      );
       throw error;
     }
   }
@@ -67,14 +70,16 @@ export class UsersService {
         );
       }
 
+      this.logger.log(id, 'FIND USER');
+
       return { data: toUserResponse(user) };
     } catch (error) {
-      this.logger.error(`find one user: ${id}`, error);
+      this.logger.error(error, id, 'FIND USER BY ID');
       throw error;
     }
   }
 
-  async update(id: string, req: Request & T, body: UpdateUserDto) {
+  async update(id: string, body: UpdateUserDto) {
     try {
       const user = await this.userRepository.findOneBy({
         id,
@@ -88,27 +93,25 @@ export class UsersService {
         );
       }
 
-      if (req.user.id !== user.id) {
-        throw new ForbiddenException();
-      }
-
-      const updatedUser = await this.userRepository
+      const {
+        raw: [userData],
+      } = await this.userRepository
         .createQueryBuilder()
         .update({ ...body, updatedAt: new Date() })
         .where({ id, isDeleted: false })
         .returning('*')
         .execute();
 
-      this.logger.log(`update user: ${JSON.stringify(body)}`);
+      this.logger.log(`${JSON.stringify(body)}`, 'UPDATE USER');
 
-      return { data: toUserResponse(updatedUser.raw[0]) };
+      return { data: toUserResponse(userData) };
     } catch (error) {
-      this.logger.error(`update user: ${id}`, error);
+      this.logger.error(error, id, 'UPDATE USER');
       throw error;
     }
   }
 
-  async delete(id: string, reqId: string) {
+  async delete(id: string) {
     try {
       const user = await this.userRepository.findOneBy({
         id,
@@ -120,10 +123,6 @@ export class UsersService {
           UserErrorMessage.USER_NOT_FOUND,
           HttpStatus.NOT_FOUND,
         );
-      }
-
-      if (user.id !== reqId) {
-        throw new ForbiddenException();
       }
 
       await this.userRepository
@@ -132,11 +131,11 @@ export class UsersService {
         .where({ id, isDeleted: false })
         .execute();
 
-      this.logger.log(`delete user: ${id}`);
+      this.logger.log(id, 'DELETE USER');
 
       return;
     } catch (error) {
-      this.logger.error(`delete user: ${id}`, error);
+      this.logger.error(error, id, 'DELETE USER');
       throw error;
     }
   }

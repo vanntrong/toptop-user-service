@@ -13,7 +13,7 @@ export class Logger extends ConsoleLogger {
 
   log(message: any, context?: string) {
     // TO DO
-    super.log(context, message);
+    super.log(message, context);
   }
 
   debug(message: any, context?: string) {

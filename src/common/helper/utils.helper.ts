@@ -20,7 +20,6 @@ export const buildQueryFilter = <T>(reqQuery: BaseQuery & T) => {
 };
 
 export const toUserResponse = (user: User, limitField?: Array<string>) => {
-  return limitField
-    ? pick(omit(user, ['password', 'isDeleted']), limitField)
-    : omit(user, ['password', 'isDeleted']);
+  const userOmitted = omit(user, ['password', 'isDeleted']);
+  return limitField ? pick(userOmitted, limitField) : userOmitted;
 };

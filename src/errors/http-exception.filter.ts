@@ -18,23 +18,23 @@ export class AllExceptionFilter implements ExceptionFilter {
     const response: Response = ctx.getResponse();
 
     // Handling error message and logging
-    this.handleMessage(exception);
+    // this.handleMessage(exception);
 
     // Response to client
     AllExceptionFilter.handleResponse(response, exception);
   }
 
-  private handleMessage(exception: HttpException | Error): void {
-    let message = 'Internal Server Error';
+  // private handleMessage(exception: HttpException | Error): void {
+  //   let message = 'Internal Server Error';
 
-    if (exception instanceof HttpException) {
-      message = JSON.stringify(exception.getResponse());
-    } else if (exception instanceof Error) {
-      message = exception.stack.toString();
-    }
+  //   if (exception instanceof HttpException) {
+  //     message = JSON.stringify(exception.getResponse());
+  //   } else if (exception instanceof Error) {
+  //     message = exception.stack.toString();
+  //   }
 
-    message && this.logger.error(message);
-  }
+  //   message && this.logger.error(message);
+  // }
 
   private static handleResponse(
     response: Response,
