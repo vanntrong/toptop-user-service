@@ -15,8 +15,9 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { Request } from 'express';
-import { UpdateUserDto, UserFollowDto } from './users.dto';
+import { GetUserDto, UpdateUserDto, UserFollowDto } from './users.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -63,5 +64,11 @@ export class UsersController {
   async follow(@Body() body: UserFollowDto, @Req() req: Request & any) {
     const res = await this.usersService.follow(body.followingId, req.user.id);
     return res;
+  }
+
+  @MessagePattern('get_user')
+  async getUser(data: GetUserDto): Promise<any> {
+    const res = await this.usersService.findOne(data.id);
+    return res.data;
   }
 }

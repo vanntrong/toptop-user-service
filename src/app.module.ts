@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ClientsModule } from '@nestjs/microservices';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DBLoader } from './loaders/db/dbLoader';
@@ -13,6 +14,7 @@ import { UsersModule } from './modules/users/users.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    // ClientsModule.register([{}]),
     DBLoader.init(),
     RedisLoader.init(),
     AuthModule,

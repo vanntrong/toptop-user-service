@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @MinLength(2)
@@ -24,7 +30,13 @@ export class UpdateUserDto {
 }
 
 export class UserFollowDto {
-  @IsString()
+  @IsUUID('4')
   @IsNotEmpty()
   followingId: string;
+}
+
+export class GetUserDto {
+  @IsUUID('4')
+  @IsNotEmpty()
+  id: string;
 }
